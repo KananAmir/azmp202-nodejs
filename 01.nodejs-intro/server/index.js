@@ -176,10 +176,11 @@ app.get("/api/products/:id", (req, res) => {
   const product = products.find((p) => p.id === +id);
   if (product !== undefined) {
     // res.status(200).json(product);
-    res.status(200).send({
-      data: product,
-      message: "success",
-    });
+    // res.status(200).send({
+    //   data: product,
+    //   message: "success",
+    // });
+    res.status(200).send(product);
   } else {
     res.status(404).send({
       message: "not found!",
