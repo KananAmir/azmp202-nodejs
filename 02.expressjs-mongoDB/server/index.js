@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const app = express();
 const PORT = 8080;
 
+app.use(express.json());
 const { Schema } = mongoose;
 
 const ProductSchema = new Schema({
@@ -17,6 +18,7 @@ const ProductSchema = new Schema({
 
 const ProductModel = mongoose.model("Products", ProductSchema);
 
+//get all
 app.get("/api/products", async (req, res) => {
   try {
     const products = await ProductModel.find({});
@@ -28,6 +30,23 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+//search by title
+app.get("/api/products/search", async (req, res) => {
+  const { title } = req.query;
+  // console.log(title);
+
+  try {
+    // const products = await ProductModel.find({ title: title });
+    const products = await ProductModel.find({
+      title: { $regex: title, $options: "i" },
+    });
+    res.status(200).json({ data: products, message: "success!" });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
+
+// get one
 app.get("/api/products/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -43,10 +62,12 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
+// delete one
 app.delete("/api/products/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const deletedProduct = await ProductModel.findByIdAndDelete(id);
+    const products = await ProductModel.find({});
     if (!deletedProduct) {
       return res
         .status(404)
@@ -55,14 +76,64 @@ app.delete("/api/products/:id", async (req, res) => {
     res.status(200).json({
       deletedProduct: deletedProduct,
       message: "deleted successfully!",
+      products: products,
     });
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
 });
 
-app.post("/api/products", async (req, res) => {});
-app.put("/api/products/:id", async (req, res) => {});
+// add one
+app.post("/api/products", async (req, res) => {
+  const { title, description, price, category } = req.body;
+
+  if (!title || !description || !price || !category) {
+    return res
+      .status(400)
+      .json({ message: "Bad Request! All fileds should be add!" });
+  }
+  try {
+    const newProduct = ProductModel({ ...req.body });
+    await newProduct.save();
+    res.status(201).json({
+      message: "product added successfully!",
+      product: newProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// update
+
+app.put("/api/products/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({
+        message: "product not found!",
+      });
+    }
+
+    res.status(200).json({
+      message: "updated successfully!",
+      updatedProduct: updatedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 mongoose
   .connect(
