@@ -17,7 +17,8 @@ mongoose.connect(DB_URL).then(() => {
   console.log("Connected!");
   app.listen(PORT, () => {
     console.log(
-      `Example app listening on port ${PORT}, url is http://localhost:${PORT}`
+      `Example app listening on port ${PORT}, 
+      url is http://localhost:${PORT}`
     );
   });
 });
