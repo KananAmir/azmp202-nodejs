@@ -1,26 +1,8 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-dotenv.config();
+const ProductModel = require("../models/productModel");
 
-const app = express();
-const PORT = 8080;
+const getAllProduct = async (req, res) => {
+  console.log("aaa");
 
-app.use(express.json());
-const { Schema } = mongoose;
-
-const ProductSchema = new Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  category: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-});
-
-const ProductModel = mongoose.model("Products", ProductSchema);
-
-//get all
-app.get("/api/products", async (req, res) => {
   try {
     const products = await ProductModel.find({});
     // console.log(products);
@@ -29,10 +11,9 @@ app.get("/api/products", async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-});
+};
 
-//search by title
-app.get("/api/products/search", async (req, res) => {
+const searchByTitle = async (req, res) => {
   const { title } = req.query;
   // console.log(title);
 
@@ -45,10 +26,9 @@ app.get("/api/products/search", async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-});
+};
 
-// get one
-app.get("/api/products/:id", async (req, res) => {
+const getProductById = async (req, res) => {
   const { id } = req.params;
   try {
     const product = await ProductModel.findById(id);
@@ -61,10 +41,9 @@ app.get("/api/products/:id", async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-});
+};
 
-// delete one
-app.delete("/api/products/:id", async (req, res) => {
+const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
     const deletedProduct = await ProductModel.findByIdAndDelete(id);
@@ -82,10 +61,9 @@ app.delete("/api/products/:id", async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
-});
+};
 
-// add one
-app.post("/api/products", async (req, res) => {
+const postProduct = async (req, res) => {
   const { title, description, price, category } = req.body;
 
   if (!title || !description || !price || !category) {
@@ -103,11 +81,9 @@ app.post("/api/products", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
+};
 
-// update
-
-app.put("/api/products/:id", async (req, res) => {
+const editProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -134,17 +110,13 @@ app.put("/api/products/:id", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});
+};
 
-mongoose
-  .connect(
-    "mongodb+srv://amirovknn:azmp202@cluster0.knpfe.mongodb.net/amirovkanan?retryWrites=true&w=majority&appName=Cluster0"
-  )
-  .then(() => {
-    console.log("Connected!");
-    app.listen(PORT, () => {
-      console.log(
-        `Example app listening on port ${PORT}, url is http://localhost:${PORT}`
-      );
-    });
-  });
+module.exports = {
+  getAllProduct,
+  searchByTitle,
+  getProductById,
+  deleteProduct,
+  postProduct,
+  editProduct,
+};
