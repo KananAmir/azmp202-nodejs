@@ -5,9 +5,9 @@ import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 
 function Home() {
-
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(false)
+    const [searchQuery, setSearchQuery] = useState("")
 
     const getProducts = async () => {
         try {
@@ -41,19 +41,22 @@ function Home() {
         }
     }
 
-    let timeout = null
-    const handleSearch = (e) => {
-        clearTimeout(timeout)
-        try {
-            timeout = setTimeout(async () => {
-                const res = await axios(`${BASE_URL}/products/search?title=${e.target.value.trim()}`)
-                setProducts([...res.data.data])
-            }, 500);
-        } catch (error) {
-            console.log(error);
+    // let timeout = null
+    // const handleSearch = (e) => {
+    //     clearTimeout(timeout)
+    //     try {
+    //         timeout = setTimeout(async () => {
+    //             const res = await axios(`${BASE_URL}/products/search?title=${e.target.value.trim()}`)
+    //             setProducts([...res.data.data])
+    //         }, 500);
+    //     } catch (error) {
+    //         console.log(error);
 
-        }
-    }
+    //     }
+    // }
+
+    const filteredProducts = products.filter((p) => p.title.toLowerCase().includes(searchQuery.toLowerCase().trim()))
+
     useEffect(() => {
         getProducts()
     }, [])
@@ -69,9 +72,10 @@ function Home() {
                 <link rel="canonical" href="https://www.tacobell.com/" />
             </Helmet>
 
-            <div><input type="search" placeholder='search product..' onChange={handleSearch} /></div>
+            {/* <div><input type="search" placeholder='search product..' onChange={handleSearch} /></div> */}
+            <div><input type="search" placeholder='search product..' onChange={(e) => { setSearchQuery(e.target.value) }} /></div>
             <ul>
-                {products.length > 0 && products.map((p) => {
+                {products.length > 0 && filteredProducts.map((p) => {
                     return <li key={p.id}><span>{p.title}</span> <button onClick={() => {
                         if (window.confirm("are u sure to delete??")) {
                             handleDelete(p.id)
