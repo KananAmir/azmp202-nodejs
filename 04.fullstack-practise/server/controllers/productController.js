@@ -38,7 +38,7 @@ const deleteProduct = async (req, res) => {
 };
 
 const addNewData = async (req, res) => {
-  // console.log(req.body);
+  console.log(req.body);
 
   try {
     const newProduct = ProductModel({ ...req.body });

@@ -10,8 +10,8 @@ const ProductSchema = new Schema(
     price: { type: Number, required: true },
     description: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    raiting: { type: Number, required: true },
-    oldPrice: { type: Number, required: true },
+    raiting: { type: Number },
+    oldPrice: { type: Number },
   },
   { timestamps: true }
 );
