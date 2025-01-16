@@ -12,6 +12,7 @@ const ProductSchema = new Schema(
     imageUrl: { type: String, required: true },
     raiting: { type: Number },
     oldPrice: { type: Number },
+    category: { type: String },
   },
   { timestamps: true }
 );

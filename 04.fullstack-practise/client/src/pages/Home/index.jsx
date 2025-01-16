@@ -10,8 +10,6 @@ import { LuShoppingCart } from "react-icons/lu";
 import { FaInfoCircle } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import { FormControl, InputLabel, MenuItem } from "@mui/material";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { WishlistContext } from "../../context/wishlistContext";
@@ -26,6 +24,7 @@ const Home = () => {
 
     const { toggleWishlist } = useContext(WishlistContext)
 
+    const categories = ["all", "red", "white", "homemade"]
 
 
     const getWines = async () => {
@@ -58,6 +57,14 @@ const Home = () => {
         setWines([...sortedWines])
     }
 
+
+    const handleFilter = (category) => {
+        if (category !== "all") {
+            setWines([...winesCopy].filter((q) => q.category === category))
+        } else {
+            setWines([...winesCopy])
+        }
+    }
     return (
 
         <>
@@ -72,6 +79,13 @@ const Home = () => {
 
                     <div style={{ margin: "1rem 0", display: "flex", justifyContent: "space-between" }}>
                         <TextField id="outlined-basic" label="Search" variant="outlined" onChange={(e) => { setSearchQuery(e.target.value) }} />
+
+
+                        <div style={{ display: "flex", gap: "1rem" }}>
+                            {categories.map((c) => {
+                                return <button key={c} style={{ padding: "0 1rem" }} onClick={() => { handleFilter(c) }}>{c}</button>
+                            })}
+                        </div>
                         <select name="" id="" onChange={handleChange}>
                             <option value="asc">ASC</option>
                             <option value="desc">DESC</option>
