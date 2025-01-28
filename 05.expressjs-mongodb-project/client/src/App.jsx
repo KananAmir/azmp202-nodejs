@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import axios from "axios"
 import { BASE_URL } from './constants'
+import ProductForm from './components/AddProduct'
 
 function App() {
   const [products, setProducts] = useState([])
@@ -27,11 +28,14 @@ function App() {
   }
   return (
     <>
+      <ProductForm />
+      <hr />
       <ul>
         {products.length > 0 && products.map((product) => {
           return <li key={product._id}>{product.name}</li>
         })}
       </ul>
+
     </>
   )
 }

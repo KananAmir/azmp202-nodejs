@@ -71,7 +71,14 @@ const deleteProduct = async (req, res) => {
 
 const postProduct = async (req, res) => {
   try {
-    const newProduct = ProductModel({ ...req.body });
+    console.log(req.file);
+
+    const imagePath = req.file.path;
+    const newProduct = ProductModel({
+      ...req.body,
+      image: `http://localhost:4000/${imagePath}`,
+    });
+
     await newProduct.save();
     res.status(201).json({
       message: "product added successfully!",
