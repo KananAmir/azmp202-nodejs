@@ -1,6 +1,7 @@
 const express = require("express");
 const productRouter = require("./routes/productRoute");
 const categoryRouter = require("./routes/categoryRoute");
+const authRouter = require("./routes/authRoute");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const multer = require("multer");
@@ -11,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 const DB_URL = process.env.DB_URL;
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4000;
 // console.log(process.env.PORT);
 
 const conntectDb = require("./config/db");
@@ -19,7 +20,38 @@ const conntectDb = require("./config/db");
 app.use(cors());
 app.use("/api/products", productRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api", authRouter);
 
+const nodemailer = require("nodemailer");
+
+// ✉️ Nodemailer Transporter konfiqurasiyası
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "amirovknn@gmail.com", // Gmail e-poçt adresiniz
+    pass: "Salam123", // Gmail üçün tətbiq şifrəniz
+  },
+});
+
+// 📩 Email göndərən API
+app.post("/send-email", async (req, res) => {
+  console.log(req.body);
+
+  const { to, subject, text } = req.body;
+
+  try {
+    const info = await transporter.sendMail({
+      from: `"Admin" <amirovknn@gmail.com>`,
+      to,
+      subject,
+      text,
+    });
+
+    res.status(200).json({ message: "Email göndərildi!", info });
+  } catch (error) {
+    res.status(500).json({ message: "Email göndərilmədi!", error });
+  }
+});
 //middleware
 // const logger = (req, res, next) => {
 //   console.log("logger widdleware");

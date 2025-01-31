@@ -1,7 +1,14 @@
 const ProductModel = require("../models/productModel");
-
+const jwt = require("jsonwebtoken");
 const getAllProducts = async (req, res) => {
   try {
+    // const token = req.headers.authorization;
+
+    // const decoded = jwt.verify(token, "secret");
+    // if (decoded.role !== "admin") {
+    //   return res.status(403).json({ message: "you are not admin!" });
+    // }
+
     // const { name, sortBy = "name", order = "asc" } = req.query;
     const { name, sortBy, order, page = 1, limit } = req.query;
 
@@ -30,7 +37,7 @@ const getAllProducts = async (req, res) => {
       message: "success!",
     });
   } catch (error) {
-    res.status(500).send({ message: error.message });
+    res.status(500).send({ message: error });
   }
 };
 
@@ -71,10 +78,8 @@ const deleteProduct = async (req, res) => {
 
 const postProduct = async (req, res) => {
   try {
-    console.log(req.file);
-
     const imagePath = req.file.path;
-    const newProduct = ProductModel({
+    const newProduct = new ProductModel({
       ...req.body,
       image: `http://localhost:4000/${imagePath}`,
     });

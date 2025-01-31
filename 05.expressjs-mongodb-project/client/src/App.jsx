@@ -3,38 +3,32 @@ import './App.css'
 import axios from "axios"
 import { BASE_URL } from './constants'
 import ProductForm from './components/AddProduct'
+import { Route, Routes } from 'react-router-dom'
+import ClientLayout from './layouts/ClientLayout'
+import AdminLayout from './layouts/AdminLayout'
+import Home from './pages/Client/Home'
+import Dashboard from './pages/Admin/Dashboard'
+import Login from './pages/Admin/Login'
+import Products from './pages/Admin/Products'
+import PrivateRoute from './layouts/PrivateRoute'
 
 function App() {
-  const [products, setProducts] = useState([])
 
-  const getProducts = async () => {
-    try {
-      const response = await axios(`${BASE_URL}products`)
-      setProducts(response.data.data)
-
-    } catch (error) {
-      console.log(error);
-
-    }
-  }
-
-  useEffect(() => {
-    getProducts()
-  }, [])
-
-
-  if (products.length === 0) {
-    return <p>no product to show!</p>
-  }
   return (
     <>
-      <ProductForm />
-      <hr />
-      <ul>
-        {products.length > 0 && products.map((product) => {
-          return <li key={product._id}>{product.name}</li>
-        })}
-      </ul>
+      <Routes>
+        <Route path='/' element={<ClientLayout />}>
+          <Route index element={<Home />} />
+        </Route>
+        <Route path='/admin' element={<AdminLayout />}>
+          <Route element={<PrivateRoute roles={["user", "admin"]} />}>
+            <Route index element={<Dashboard />} />
+            <Route path='products' element={<Products />} />
+          </Route>
+          <Route path='login' element={<Login />} />
+        </Route>
+
+      </Routes>
 
     </>
   )
